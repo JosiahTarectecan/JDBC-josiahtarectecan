@@ -13,45 +13,36 @@ import java.io.*;
  */
 public class Role implements Serializable{
        
-       private int roleId;
+       private int roleID;
        private String roleName;
        
        public Role(){
-              this.roleId = 0;
-              this.roleName = " ";
-       }
-              
-       public Role(int inputRoleID, String inputRoleName){
-              this.roleId = inputRoleID;
-              this.roleName = inputRoleName;
+       
        }
        
-       public Role(int inputRoleID){
-              this.roleId = inputRoleID;
-              this.roleName = null;
+       public Role(int roleID, String roleName){
+       
+              this.roleID = roleID;
+              this.roleName = roleName;
+              
        }
 
-       public int getRoleId() {
-              return roleId;
+       public int getRoleID() {
+              return roleID;
        }
 
-       public void setRoleId(int inputRoleID) {
-              this.roleId = inputRoleID;
+       public void setRoleID(int roleID) {
+              this.roleID = roleID;
        }
 
        public String getRoleName() {
               return roleName;
        }
 
-       public void setRoleName(String inputRoleName) {
-              this.roleName = inputRoleName;
+       public void setRoleName(String roleName) {
+              this.roleName = roleName;
        }
-
-       @Override
-       public String toString() {
-              return "Role{" + "roleId=" + roleId + ", roleName=" + roleName + '}';
-       }
- 
+             
        
             
        
