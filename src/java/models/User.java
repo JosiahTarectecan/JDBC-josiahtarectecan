@@ -25,8 +25,8 @@ public class User implements Serializable{
 
        }
        
-       public User(String email, String fname, String lname, String password, 
-               int inputRole, boolean active, int role, String roleName){
+       public User(String email, boolean active, String fname, String lname, String password, 
+               int role, String roleName){
               
               this.email = email;
               this.fname = fname;
