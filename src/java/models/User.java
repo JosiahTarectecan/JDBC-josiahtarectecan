@@ -11,88 +11,67 @@ import java.io.*;
  *
  * @author JosiahGabrielTarecte
  */
-public class User implements Serializable{
-       
-       private String email;
-       private String fname;
-       private String lname;
-       private String password;
-       private boolean active;
-       private int role;
-       private String roleName;
-       
-       public User(){
+public class User implements Serializable  {
+    
+    private String email;
+    private String firstname;
+    private String lastname;
+    private String password;
+    private Role role;
+    
+    public User()   {
+        
+    }
 
-       }
-       
-       public User(String email, boolean active, String fname, String lname, String password, 
-               int role, String roleName){
-              
-              this.email = email;
-              this.fname = fname;
-              this.lname = lname;
-              this.password = password;
-              this.active = active;
-              this.role = role;
-              this.roleName = roleName;
-              
-       }
+    public User(String email, String firstname, String lastname, String password, Role role) {
+        
+        this.email = email;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.password = password;
+        this.role = role;
+    }
 
-       public String getEmail() {
-              return email;
-       }
+    public String getEmail() {
+        return email;
+    }
 
-       public void setEmail(String email) {
-              this.email = email;
-       }
+    public String getFirstname() {
+        return firstname;
+    }
 
-       public String getFname() {
-              return fname;
-       }
+    public String getLastname() {
+        return lastname;
+    }
 
-       public void setFname(String fname) {
-              this.fname = fname;
-       }
+    public String getPassword() {
+        return password;
+    }
 
-       public String getLname() {
-              return lname;
-       }
+    public Role getRole() {
+        return role;
+    }
 
-       public void setLname(String lname) {
-              this.lname = lname;
-       }
 
-       public String getPassword() {
-              return password;
-       }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-       public void setPassword(String password) {
-              this.password = password;
-       }
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
 
-       public boolean isActive() {
-              return active;
-       }
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
 
-       public void setActive(boolean active) {
-              this.active = active;
-       }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-       public int getRole() {
-              return role;
-       }
-
-       public void setRole(int role) {
-              this.role = role;
-       }
-
-       public String getRoleName() {
-              return roleName;
-       }
-
-       public void setRoleName(String roleName) {
-              this.roleName = roleName;
-       }
-       
-
+    public void setRole(Role role) {
+        this.role = role;
+    }
+    
+    
 }

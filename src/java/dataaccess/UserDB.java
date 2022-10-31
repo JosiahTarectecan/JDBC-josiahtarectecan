@@ -8,10 +8,8 @@ package dataaccess;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import models.Role;
 import models.User;
 
 /**
@@ -19,96 +17,128 @@ import models.User;
  * @author JosiahGabrielTarecte
  */
 public class UserDB {
-      
-       public List<User> getAll(){
-       
-       List<User> users = new ArrayList<>();
-       ConnectionPool cp = ConnectionPool.getInstance();
-       Connection con = cp.getConnection();
-       PreparedStatement ps = null;
-       ResultSet rs = null;
-              
-       String sql = "SELECT u.email, u.active, u.first_name, u.last_name, u.password, u.role, r.role_name FROM user u INNER JOIN role r ON r.role_id = u.role";
-       
-              try {
-                     ps = con.prepareStatement(sql);
-                     rs = ps.executeQuery();
-                     
-                     while(rs.next()){
-                     
-                            String email = rs.getString(1);
-                            boolean active = rs.getInt(2) == 1;
-                            String fname = rs.getString(3);
-                            String lname = rs.getString(4);
-                            String password = rs.getString(5);
-                            int role = rs.getInt(6);
-                            String roleName = rs.getString(7);
-                            
-                            User user = new User(email, active, fname, lname, password, role, roleName);
-                            users.add(user);
-                     }
-                     
-              } catch (SQLException ex) {
-                     Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
-              } finally{
-                     
-                     DBUtil.closePreparedStatement(ps);
-                     DBUtil.closeSetResultSet(rs);
-                     cp.freeConnection(con);
+
     
-              }  
-              
-       return users;       
-       }
+    public List<User> getAll() throws Exception {
+        
+        List<User> users = new ArrayList<>();
+        ConnectionPool cp = ConnectionPool.getInstance();
+        Connection con = cp.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        String sql = "select email, first_name, last_name, password, role_id, role_name from user u, role r where (u.role = r.role_id)";
+        
+        try {
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                String email = rs.getString(1);        
+                String firstname = rs.getString(2);
+                String lastname = rs.getString(3);
+                String password = rs.getString(4);
+                Role role = new Role(rs.getInt(5), rs.getString(6));
+                User user = new User(email, firstname, lastname, password, role);
+                users.add(user);
+            }
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            cp.freeConnection(con);
+        }
+
+        return users;
+    }
+    
+    public User get(String email) throws Exception   {
+        
+        ConnectionPool cp = ConnectionPool.getInstance();
+        Connection con = cp.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        User user = null;
+        
+        String sql = "select first_name, last_name, password, role_id, role_name from user u join role r on (r.role_id = u.role) where email=?";
+        
+        ps = con.prepareStatement(sql);
+        ps.setString(1, email);
+        rs = ps.executeQuery();
+        if (rs.next()) {
+            
+            String firstname = rs.getString(1);
+            String lastname = rs.getString(2);
+            String password = rs.getString(3);
+            Role role = new Role(rs.getInt(4), rs.getString(5));
+            user = new User(email, firstname, lastname, password, role);
+        }
+     
+        DBUtil.closeResultSet(rs);
+        DBUtil.closePreparedStatement(ps);
+        cp.freeConnection(con);
        
-       public User get(String userEmail){
-       
-       User user = null;
-       ConnectionPool cp = ConnectionPool.getInstance();
-       Connection con = cp.getConnection();
-       PreparedStatement ps = null;
-       ResultSet rs = null;
-       
-       String sql = "SELECT u.email, u.active, u.first_name, u.last_name, u.password, u.role, r.role_name FROM user u INNER JOIN role r ON r.role_id = u.role WHERE email=?";
-              
-              try{
-                    ps = con.prepareStatement(sql);
-                    ps.setString(1, userEmail);
-                    rs = ps.executeQuery();
-                    if(rs.next()){
-                           String email = rs.getString(1);
-                            boolean active = rs.getInt(2) == 1;
-                            String fname = rs.getString(3);
-                            String lname = rs.getString(4);
-                            String password = rs.getString(5);
-                            int role = rs.getInt(6);
-                            String roleName = rs.getString(7);
-                            
-                            user = new User(email, active, fname, lname, password, role, roleName); 
-                    }
-              } catch (SQLException ex) {
-                     Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
-              } finally{
-                     
-                     DBUtil.closePreparedStatement(ps);
-                     DBUtil.closeSetResultSet(rs);
-                     cp.freeConnection(con);
-                     
-              }
-       return user;
-       }
-       
-       public void insert(){
-       
-       }
-       
-       public void update(){
-       
-       }
-       
-       public void delete(){
-       
-       }
-       
-       
+        return user;
+    }
+    
+    public void insert(User user) throws Exception {
+        
+        ConnectionPool cp = ConnectionPool.getInstance();
+        Connection con = cp.getConnection();
+        PreparedStatement ps = null;
+        String sql = "INSERT INTO user (email,first_name,last_name,password,role) VALUES (?, ?, ?, ?, ?)";
+        
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setString(1, user.getEmail());
+            ps.setString(2, user.getFirstname());
+            ps.setString(3, user.getLastname());
+            ps.setString(4, user.getPassword());
+            ps.setInt(5, user.getRole().getRoleID());
+            ps.executeUpdate();
+        } finally {
+            DBUtil.closePreparedStatement(ps);
+            cp.freeConnection(con);
+        }
+    }
+
+    public void update(User user) throws Exception {
+        
+        ConnectionPool cp = ConnectionPool.getInstance();
+        Connection con = cp.getConnection();
+        PreparedStatement ps = null;
+        String sql = "update user set first_name=?, last_name=?, password=?, role=? where email=?";
+        
+        try {
+            ps = con.prepareStatement(sql);
+            
+            ps.setString(1, user.getFirstname());
+            ps.setString(2, user.getLastname());
+            ps.setString(3, user.getPassword());
+            ps.setInt(4, user.getRole().getRoleID());
+            ps.setString(5, user.getEmail());
+            ps.executeUpdate();
+            
+        } finally {
+            DBUtil.closePreparedStatement(ps);
+            cp.freeConnection(con);
+        }
+    }
+    
+    public void delete(String email) throws Exception  {
+        
+        ConnectionPool cp = ConnectionPool.getInstance();
+        Connection con = cp.getConnection();
+        PreparedStatement ps = null;
+        String sql = "delete from user where email=?";
+        
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setString(1, email);
+            ps.executeUpdate();
+            
+        } finally {
+            
+            DBUtil.closePreparedStatement(ps);
+            cp.freeConnection(con);
+        }
+    }
 }
